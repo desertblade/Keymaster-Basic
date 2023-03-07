@@ -1,7 +1,7 @@
 # Keymaster Basic
 # Simple lock code manager for Home Assistant
 
-# Add your lock here
+# Add your locks here
 lock:
   - platform: group
     name: "House Locks"
