@@ -89,9 +89,7 @@ automation:
                     int}}
                 target:
                   entity_id: >-
-                    {% for entity_id in states.lock.house_locks.attributes.entity_id %}
-                      {{- entity_id }}
-                    {% endfor %}
+                    {{ states.lock.house_locks.attributes.entity_id }}
                 enabled: true
           - conditions:
               - condition: trigger
@@ -104,9 +102,7 @@ automation:
                     int}}
                 target:
                   entity_id: >-
-                    {% for entity_id in states.lock.house_locks.attributes.entity_id %}
-                      {{- entity_id }}
-                    {% endfor %}
+                    {{ states.lock.house_locks.attributes.entity_id }}
     mode: queued
     max: 10
 
