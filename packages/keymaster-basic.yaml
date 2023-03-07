@@ -1,0 +1,272 @@
+# Keymaster Basic
+# Simple lock code manager for Home Assistant
+
+# Add your lock here
+lock:
+  - platform: group
+    name: "House Locks"
+    entities:
+      - lock.front_door
+      - lock.another_door
+
+# Add notification services
+notify:
+  - name: "Lock Notify Group"
+    platform: group
+    services:
+      - service: mobile_app_desertblade_phone
+      - service: mobile_app_person_ha_app
+
+###############################
+##  NO CHANGES NEEDED BELOW  ##
+##    PROCEED WITH CAUTION   ##
+###############################
+automation:
+  - alias: Set Lock Codes
+    description: Set Key Codes on Locks
+    trigger:
+      - platform: state
+        entity_id:
+          - input_text.lock_code_slot_1_pin
+          - input_text.lock_code_slot_2_pin
+          - input_text.lock_code_slot_3_pin
+          - input_text.lock_code_slot_4_pin
+          - input_text.lock_code_slot_5_pin
+          - input_text.lock_code_slot_6_pin
+          - input_text.lock_code_slot_7_pin
+          - input_text.lock_code_slot_8_pin
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 5
+        id: PIN
+      - platform: state
+        entity_id:
+          - input_boolean.lock_code_slot_1_state
+          - input_boolean.lock_code_slot_2_state
+          - input_boolean.lock_code_slot_3_state
+          - input_boolean.lock_code_slot_4_state
+          - input_boolean.lock_code_slot_5_state
+          - input_boolean.lock_code_slot_6_state
+          - input_boolean.lock_code_slot_7_state
+          - input_boolean.lock_code_slot_8_state
+        id: Disable
+        to: "off"
+      - platform: state
+        entity_id:
+          - input_boolean.lock_code_slot_1_state
+          - input_boolean.lock_code_slot_2_state
+          - input_boolean.lock_code_slot_3_state
+          - input_boolean.lock_code_slot_4_state
+          - input_boolean.lock_code_slot_5_state
+          - input_boolean.lock_code_slot_6_state
+          - input_boolean.lock_code_slot_7_state
+          - input_boolean.lock_code_slot_8_state
+        id: PIN
+        to: "on"
+    condition: []
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: PIN
+              - condition: template
+                value_template: >-
+                  {% set mysensor = "input_boolean.lock_code_slot_" ~
+                  (trigger.entity_id | replace('.','z') | list | sort | first | int)
+                  ~ "_state" %}
+
+                  {{is_state(mysensor,'on')}} 
+            sequence:
+              - service: zwave_js.set_lock_usercode
+                data:
+                  usercode: >-
+                    {% set mysensor = "input_text.lock_code_slot_" ~
+                    (trigger.entity_id | replace('.','z') | list | sort | first |
+                    int) ~ "_PIN" %}   {{states(mysensor)}}
+                  code_slot: >-
+                    {{trigger.entity_id | replace('.','z') | list | sort | first |
+                    int}}
+                target:
+                  entity_id: >-
+                    {% for entity_id in states.lock.house_locks.attributes.entity_id %}
+                      {{- entity_id }}
+                    {% endfor %}
+                enabled: true
+          - conditions:
+              - condition: trigger
+                id: Disable
+            sequence:
+              - service: zwave_js.clear_lock_usercode
+                data:
+                  code_slot: >-
+                    {{trigger.entity_id | replace('.','z') | list | sort | first |
+                    int}}
+                target:
+                  entity_id: >-
+                    {% for entity_id in states.lock.house_locks.attributes.entity_id %}
+                      {{- entity_id }}
+                    {% endfor %}
+    mode: queued
+    max: 10
+
+  - alias: Lock Notifications
+    description: "notify when certain codes are used to unlock the doors, if notify is enabled"
+    trigger:
+      - platform: event
+        event_type: zwave_js_notification
+        event_data:
+          command_class: 113
+          command_class_name: Notification
+          label: Access Control
+          type: 6
+          event: 6
+          event_label: Keypad unlock operation
+    condition: []
+    action:
+      - service: input_text.set_value
+        data:
+          value: "{{trigger.event | replace('>','') | last}}"
+        target:
+          entity_id: input_text.last_lock_unlock_code_slot
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: |2
+                      {% set mysensor = "input_boolean.lock_code_slot_" ~ states('input_text.last_lock_unlock_code_slot') ~ "_notify" %}  
+                      {{is_state(mysensor, 'on') }}
+            sequence:
+              - service: notify.lock_notify_group
+                data:
+                  message: >-
+                    {% set namesensor = "input_text.lock_code_slot_" ~
+                    states('input_text.last_lock_unlock_code_slot') ~ "_name" %} {{
+                    states(namesensor)}} unlocked the door via keypad at
+                    {{as_timestamp(states.input_text.last_lock_unlock_code_slot.last_changed)
+                    | timestamp_custom("%H:%M:%S",local=True)}}
+    mode: single
+
+# Needed Variables
+input_boolean:
+  lock_code_slot_1_state:
+    name: Lock Code Slot 1 State
+    icon: mdi:lock-check
+  lock_code_slot_1_notify:
+    name: Lock Code Slot 1 Notify
+    icon: mdi:alarm-bell 
+  lock_code_slot_2_state:
+    name: Lock Code Slot 2 State
+    icon: mdi:lock-check
+  lock_code_slot_2_notify:
+    name: Lock Code Slot 2 Notify
+    icon: mdi:alarm-bell
+  lock_code_slot_3_state:
+    name: Lock Code Slot 3 State
+    icon: mdi:lock-check
+  lock_code_slot_3_notify:
+    name: Lock Code Slot 3 Notify
+    icon: mdi:alarm-bell
+  lock_code_slot_4_state:
+    name: Lock Code Slot 4 State
+    icon: mdi:lock-check
+  lock_code_slot_4_notify:
+    name: Lock Code Slot 4 Notify
+    icon: mdi:alarm-bell 
+  lock_code_slot_5_state:
+    name: Lock Code Slot 5 State
+    icon: mdi:lock-check
+  lock_code_slot_5_notify:
+    name: Lock Code Slot 5 Notify
+    icon: mdi:alarm-bell
+  lock_code_slot_6_state:
+    name: Lock Code Slot 6 State
+    icon: mdi:lock-check
+  lock_code_slot_6_notify:
+    name: Lock Code Slot 6 Notify
+    icon: mdi:alarm-bell
+  lock_code_slot_7_state:
+    name: Lock Code Slot 7 State
+    icon: mdi:lock-check
+  lock_code_slot_7_notify:
+    name: Lock Code Slot 7 Notify
+    icon: mdi:alarm-bell
+  lock_code_slot_8_state:
+    name: Lock Code Slot 8 State
+    icon: mdi:lock-check
+  lock_code_slot_8_notify:
+    name: Lock Code Slot 8 Notify
+    icon: mdi:alarm-bell     
+
+input_text:
+  lock_code_slot_1_pin:
+    name: Lock Code Slot 1 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_1_name:
+    name: Lock Code Slot 1 Name
+    icon: mdi:account
+  lock_code_slot_2_pin:
+    name: Lock Code Slot 2 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_2_name:
+    name: Lock Code Slot 2 Name
+    icon: mdi:account
+  lock_code_slot_3_pin:
+    name: Lock Code Slot 3 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_3_name:
+    name: Lock Code Slot 3 Name
+    icon: mdi:account
+  lock_code_slot_4_pin:
+    name: Lock Code Slot 4 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_4_name:
+    name: Lock Code Slot 4 Name
+    icon: mdi:account
+  lock_code_slot_5_pin:
+    name: Lock Code Slot 5 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_5_name:
+    name: Lock Code Slot 5 Name
+    icon: mdi:account
+  lock_code_slot_6_pin:
+    name: Lock Code Slot 6 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_6_name:
+    name: Lock Code Slot 6 Name
+    icon: mdi:account
+  lock_code_slot_7_pin:
+    name: Lock Code Slot 7 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_7_name:
+    name: Lock Code Slot 7 Name
+    icon: mdi:account
+  lock_code_slot_8_pin:
+    name: Lock Code Slot 8 PIN
+    min: 4
+    max: 10
+    pattern: "[0-9]*"
+    icon: mdi:form-textbox-password 
+  lock_code_slot_8_name:
+    name: Lock Code Slot 8 Name
+    icon: mdi:account

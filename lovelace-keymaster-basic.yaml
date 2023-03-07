@@ -1,0 +1,151 @@
+views:
+  - title: Keymaster
+    theme: Backend-selected
+    path: keymaster
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 1
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_1_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_1_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_1_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_1_notify
+                name: Notify
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 2
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_2_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_2_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_2_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_2_notify
+                name: Notify
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 3
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_3_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_3_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_3_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_3_notify
+                name: Notify
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 4
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_4_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_4_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_4_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_4_notify
+                name: Notify
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 5
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_5_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_5_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_5_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_5_notify
+                name: Notify
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 6
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_6_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_6_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_6_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_6_notify
+                name: Notify
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 7
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_7_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_7_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_7_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_7_notify
+                name: Notify
+      - type: vertical-stack
+        cards:
+          - content: |
+              ## Code 8
+            type: markdown
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_text.lock_code_slot_8_name
+                secondary_info: none
+                name: Name
+              - entity: input_text.lock_code_slot_8_pin
+                name: Code
+              - type: divider
+              - entity: input_boolean.lock_code_slot_8_state
+                name: Enabled
+              - entity: input_boolean.lock_code_slot_8_notify
+                name: Notify
+  
