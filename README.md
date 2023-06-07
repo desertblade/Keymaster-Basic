@@ -12,8 +12,8 @@ Combined into a package from: [HA Simple Lock Manager](https://github.com/markag
 
 ## Package Install
 
-1. Copy [packages/keymaster-basic.yaml](packages/keymaster-basic.yaml) into your Home Assistant package directory
-2. Update keymaster-basic.yaml to include your locks and people you want to notify
+1. Copy [packages/keymaster_basic.yaml](packages/keymaster_basic.yaml) into your Home Assistant package directory
+2. Update keymaster_basic.yaml to include your locks and people you want to notify
 3. Restart Home Assistant
 
 ## Lovelace UI Page
