@@ -194,6 +194,9 @@ input_boolean:
     icon: mdi:alarm-bell     
 
 input_text:
+  last_lock_unlock_code_slot:
+    name: Last Used Code Slot
+    icon: mdi:account
   lock_code_slot_1_pin:
     name: Lock Code Slot 1 PIN
     min: 4
