@@ -196,6 +196,7 @@ input_boolean:
 input_text:
   lock_code_slot_1_pin:
     name: Lock Code Slot 1 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -205,6 +206,7 @@ input_text:
     icon: mdi:account
   lock_code_slot_2_pin:
     name: Lock Code Slot 2 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -214,6 +216,7 @@ input_text:
     icon: mdi:account
   lock_code_slot_3_pin:
     name: Lock Code Slot 3 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -223,6 +226,7 @@ input_text:
     icon: mdi:account
   lock_code_slot_4_pin:
     name: Lock Code Slot 4 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -232,6 +236,7 @@ input_text:
     icon: mdi:account
   lock_code_slot_5_pin:
     name: Lock Code Slot 5 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -241,6 +246,7 @@ input_text:
     icon: mdi:account
   lock_code_slot_6_pin:
     name: Lock Code Slot 6 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -250,6 +256,7 @@ input_text:
     icon: mdi:account
   lock_code_slot_7_pin:
     name: Lock Code Slot 7 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -259,6 +266,7 @@ input_text:
     icon: mdi:account
   lock_code_slot_8_pin:
     name: Lock Code Slot 8 PIN
+    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -266,3 +274,4 @@ input_text:
   lock_code_slot_8_name:
     name: Lock Code Slot 8 Name
     icon: mdi:account
+    
