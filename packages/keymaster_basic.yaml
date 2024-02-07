@@ -106,8 +106,9 @@ automation:
     mode: queued
     max: 10
 
-  - alias: Lock Notifications
-    description: "notify when certain codes are used to unlock the doors, if notify is enabled"
+   - alias: Lock Notifications
+    description: "Notify when certain codes are used to unlock the doors, if notify is enabled"
+    id: lock_notifications
     trigger:
       - platform: event
         event_type: zwave_js_notification
@@ -118,28 +119,24 @@ automation:
           type: 6
           event: 6
           event_label: Keypad unlock operation
+        variables:
+          unlock_code_slot: "{{ trigger.event.data.parameters.userId }}"
     condition: []
     action:
-      - service: input_text.set_value
-        data:
-          value: "{{trigger.event | replace('>','') | last}}"
-        target:
-          entity_id: input_text.last_lock_unlock_code_slot
       - choose:
           - conditions:
               - condition: template
-                value_template: |2
-                      {% set mysensor = "input_boolean.lock_code_slot_" ~ states('input_text.last_lock_unlock_code_slot') ~ "_notify" %}  
-                      {{is_state(mysensor, 'on') }}
+                value_template: |
+                  {% set mysensor = "input_boolean.lock_code_slot_" ~ unlock_code_slot ~ "_notify" %}  
+                  {{is_state(mysensor, 'on') }}
             sequence:
               - service: notify.lock_notify_group
                 data:
                   message: >-
                     {% set namesensor = "input_text.lock_code_slot_" ~
-                    states('input_text.last_lock_unlock_code_slot') ~ "_name" %} {{
-                    states(namesensor)}} unlocked the door via keypad at
-                    {{as_timestamp(states.input_text.last_lock_unlock_code_slot.last_changed)
-                    | timestamp_custom("%H:%M:%S",local=True)}}
+                    unlock_code_slot ~ "_name" %} {{
+                    states(namesensor)}} unlocked the door at
+                    {{ now().strftime('%H:%M') }}
     mode: single
 
 # Needed Variables
