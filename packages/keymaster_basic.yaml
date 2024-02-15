@@ -106,7 +106,7 @@ automation:
     mode: queued
     max: 10
 
-   - alias: Lock Notifications
+  - alias: Lock Notifications
     description: "Notify when certain codes are used to unlock the doors, if notify is enabled"
     id: lock_notifications
     trigger:
