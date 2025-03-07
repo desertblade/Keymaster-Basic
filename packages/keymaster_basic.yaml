@@ -24,8 +24,8 @@ notify:
 automation:
   - alias: Set Lock Codes
     description: Set Key Codes on Locks
-    trigger:
-      - platform: state
+    triggers:
+      - trigger: state
         entity_id:
           - input_text.lock_code_slot_1_pin
           - input_text.lock_code_slot_2_pin
@@ -40,7 +40,7 @@ automation:
           minutes: 0
           seconds: 5
         id: PIN
-      - platform: state
+      - trigger: state
         entity_id:
           - input_boolean.lock_code_slot_1_state
           - input_boolean.lock_code_slot_2_state
@@ -52,7 +52,7 @@ automation:
           - input_boolean.lock_code_slot_8_state
         id: Disable
         to: "off"
-      - platform: state
+      - trigger: state
         entity_id:
           - input_boolean.lock_code_slot_1_state
           - input_boolean.lock_code_slot_2_state
@@ -65,7 +65,7 @@ automation:
         id: PIN
         to: "on"
     condition: []
-    action:
+    actions:
       - choose:
           - conditions:
               - condition: trigger
@@ -78,7 +78,7 @@ automation:
 
                   {{is_state(mysensor,'on')}} 
             sequence:
-              - service: zwave_js.set_lock_usercode
+              - action: zwave_js.set_lock_usercode
                 data:
                   usercode: >-
                     {% set mysensor = "input_text.lock_code_slot_" ~
@@ -95,7 +95,7 @@ automation:
               - condition: trigger
                 id: Disable
             sequence:
-              - service: zwave_js.clear_lock_usercode
+              - action: zwave_js.clear_lock_usercode
                 data:
                   code_slot: >-
                     {{trigger.entity_id | replace('.','z') | list | sort | first |
@@ -109,8 +109,8 @@ automation:
   - alias: Lock Notifications
     description: "Notify when certain codes are used to unlock the doors, if notify is enabled"
     id: lock_notifications
-    trigger:
-      - platform: event
+    triggers:
+      - trigger: event
         event_type: zwave_js_notification
         event_data:
           command_class: 113
@@ -122,7 +122,7 @@ automation:
         variables:
           unlock_code_slot: "{{ trigger.event.data.parameters.userId }}"
     condition: []
-    action:
+    actions:
       - choose:
           - conditions:
               - condition: template
@@ -130,7 +130,7 @@ automation:
                   {% set mysensor = "input_boolean.lock_code_slot_" ~ unlock_code_slot ~ "_notify" %}  
                   {{is_state(mysensor, 'on') }}
             sequence:
-              - service: notify.lock_notify_group
+              - action: notify.lock_notify_group
                 data:
                   message: >-
                     {% set namesensor = "input_text.lock_code_slot_" ~
