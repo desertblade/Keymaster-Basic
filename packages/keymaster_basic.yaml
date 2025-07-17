@@ -18,14 +18,14 @@ notify:
       - service: mobile_app_person_ha_app
 
 ###############################
-##  NO CHANGES NEEDED BELOW  ##
+##  NO CHANGES BELOW NEEDED  ##
 ##    PROCEED WITH CAUTION   ##
 ###############################
 automation:
   - alias: Set Lock Codes
     description: Set Key Codes on Locks
-    triggers:
-      - trigger: state
+    trigger:
+      - platform: state
         entity_id:
           - input_text.lock_code_slot_1_pin
           - input_text.lock_code_slot_2_pin
@@ -40,7 +40,7 @@ automation:
           minutes: 0
           seconds: 5
         id: PIN
-      - trigger: state
+      - platform: state
         entity_id:
           - input_boolean.lock_code_slot_1_state
           - input_boolean.lock_code_slot_2_state
@@ -52,7 +52,7 @@ automation:
           - input_boolean.lock_code_slot_8_state
         id: Disable
         to: "off"
-      - trigger: state
+      - platform: state
         entity_id:
           - input_boolean.lock_code_slot_1_state
           - input_boolean.lock_code_slot_2_state
@@ -65,7 +65,7 @@ automation:
         id: PIN
         to: "on"
     condition: []
-    actions:
+    action:
       - choose:
           - conditions:
               - condition: trigger
@@ -78,7 +78,7 @@ automation:
 
                   {{is_state(mysensor,'on')}} 
             sequence:
-              - action: zwave_js.set_lock_usercode
+              - service: zwave_js.set_lock_usercode
                 data:
                   usercode: >-
                     {% set mysensor = "input_text.lock_code_slot_" ~
@@ -95,7 +95,7 @@ automation:
               - condition: trigger
                 id: Disable
             sequence:
-              - action: zwave_js.clear_lock_usercode
+              - service: zwave_js.clear_lock_usercode
                 data:
                   code_slot: >-
                     {{trigger.entity_id | replace('.','z') | list | sort | first |
@@ -109,8 +109,8 @@ automation:
   - alias: Lock Notifications
     description: "Notify when certain codes are used to unlock the doors, if notify is enabled"
     id: lock_notifications
-    triggers:
-      - trigger: event
+    trigger:
+      - platform: event
         event_type: zwave_js_notification
         event_data:
           command_class: 113
@@ -121,8 +121,22 @@ automation:
           event_label: Keypad unlock operation
         variables:
           unlock_code_slot: "{{ trigger.event.data.parameters.userId }}"
+          # door_name: "{{ trigger.event.data.name }}"
     condition: []
-    actions:
+    action:
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.last_lock_unlock_code_slot
+        data_template:
+          value: >-
+            {{ unlock_code_slot }}
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.last_lock_unlock_code_name
+        data_template:
+          value: >-
+            {% set namesensor = "input_text.lock_code_slot_" ~ unlock_code_slot ~ "_name" %}
+                {{ states(namesensor) }}
       - choose:
           - conditions:
               - condition: template
@@ -130,12 +144,11 @@ automation:
                   {% set mysensor = "input_boolean.lock_code_slot_" ~ unlock_code_slot ~ "_notify" %}  
                   {{is_state(mysensor, 'on') }}
             sequence:
-              - action: notify.lock_notify_group
+              - service: notify.lock_notify_group
                 data:
                   message: >-
-                    {% set namesensor = "input_text.lock_code_slot_" ~
-                    unlock_code_slot ~ "_name" %} {{
-                    states(namesensor)}} unlocked the door at
+                    {% set namesensor = "input_text.lock_code_slot_" ~ unlock_code_slot ~ "_name" %} 
+                    {{ states(namesensor)}} unlocked the {{ device_name(trigger.event.data.device_id) }} at
                     {{ now().strftime('%H:%M') }}
     mode: single
 
@@ -192,11 +205,12 @@ input_boolean:
 
 input_text:
   last_lock_unlock_code_slot:
-    name: Last Used Code Slot
+    name: ID of Person to Last Unlock Door
+  last_lock_unlock_code_name:
+    name: Name of Person to Last Unlock Door
     icon: mdi:account
   lock_code_slot_1_pin:
     name: Lock Code Slot 1 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -206,7 +220,6 @@ input_text:
     icon: mdi:account
   lock_code_slot_2_pin:
     name: Lock Code Slot 2 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -216,7 +229,6 @@ input_text:
     icon: mdi:account
   lock_code_slot_3_pin:
     name: Lock Code Slot 3 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -226,7 +238,6 @@ input_text:
     icon: mdi:account
   lock_code_slot_4_pin:
     name: Lock Code Slot 4 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -236,7 +247,6 @@ input_text:
     icon: mdi:account
   lock_code_slot_5_pin:
     name: Lock Code Slot 5 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -246,7 +256,6 @@ input_text:
     icon: mdi:account
   lock_code_slot_6_pin:
     name: Lock Code Slot 6 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -256,7 +265,6 @@ input_text:
     icon: mdi:account
   lock_code_slot_7_pin:
     name: Lock Code Slot 7 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
@@ -266,7 +274,6 @@ input_text:
     icon: mdi:account
   lock_code_slot_8_pin:
     name: Lock Code Slot 8 PIN
-    mode: password
     min: 4
     max: 10
     pattern: "[0-9]*"
